@@ -18,6 +18,14 @@ A Sampler machine · the Syntakt engines · MACRO and ACID machines · four LFOs
 
 ---
 
+> [!NOTE]
+> **This is a fork.** `main` here is upstream `18nelli18/main` — the OS 2.0 that the web flasher above builds —
+> plus this page: the fork adds nothing to the OS itself. All of its work is in open pull requests against
+> `18nelli18/Modded-Cycles`: track lo-fi and fine tune (FTUNE), tempo sync, LFO learn under MACHINES, the ACID Devil
+> Fish profile, RETROSYN, the Attack / Filter / Res popups, resonance without the level drop. The list, the state of
+> each one and the order they have to land in are under
+> [Work in progress](#work-in-progress-pull-requests-from-this-fork).
+
 ## What it is
 
 Modded Cycles is a free, open-source firmware for the Model:Cycles (OS 1.13). It keeps Elektron's workflow and
@@ -67,8 +75,8 @@ The added machines come after Chord, always in this order: 07 Sampler, 08 SDVtg,
 and most were tested on a real Model:Cycles on their own, but this exact firmware (version 2.0) has not run on a
 machine yet. The status column above is the status of each feature.
 
-Every feature, every key combination and every limit is written up in [FEATURES.md](FEATURES.md). The guide on the
-website explains each one step by step, with the buttons to press.
+Every feature of this OS, every key combination and every limit is written up in [FEATURES.md](FEATURES.md). The
+guide on the website explains each one step by step, with the buttons to press.
 
 ### Not in the OS, and why
 
@@ -81,6 +89,65 @@ website explains each one step by step, with the buttons to press.
   Heuser for it; its code stays in the git history.
 
 Developers can still build any of these from the command line (see [BUILD.md](BUILD.md)).
+
+## Work in progress (pull requests from this fork)
+
+None of this is in the OS 2.0 yet. Every row is an open pull request from this fork to `18nelli18/Modded-Cycles`,
+with its branch and its user-facing docs in the same PR. All of them are **experimental**: the hardware results
+quoted below are reports from a user (*Rapport d'un utilisateur*), not Maxime's own test, and nothing here is marked
+*tested*. State as of 1 November 2026.
+
+| What you get on the machine | PR | Branch | State |
+|---|---|---|---|
+| **FUNC + SETTINGS** held gives back the stock save-pattern prompt (a Model-TG patch) | [#113](https://github.com/18nelli18/Modded-Cycles/pull/113) | `tg-func-keys` | Draft. User's report, 26/10/2026. Base of #127 and #129 |
+| **“Res” instead of “Resonance”** on the track popup plate | [#117](https://github.com/18nelli18/Modded-Cycles/pull/117) | `res-short-name` | Ready for review. Contained in #120 |
+| **Multi-line browser**: distinct names at the +Drive root, no duplicate LOCKS | [#118](https://github.com/18nelli18/Modded-Cycles/pull/118) | `browser-locks` | Ready for review |
+| **Attack, Filter and Res popups**: whole numbers, five dots, an animated curve | [#119](https://github.com/18nelli18/Modded-Cycles/pull/119) | `popup-ui` | Ready for review. Contained in #120 |
+| **Per-track Filter and Resonance** in the Sampler's Granular, Stretch, Pluck and Wave modes | [#120](https://github.com/18nelli18/Modded-Cycles/pull/120) | `sampler-mode-filter` | Ready for review. Contains #117 and #119 |
+| **MACRO's own lo-fi** under MACHINES + PITCH, with its popup; FUNC + PITCH restores the stock behaviour | [#121](https://github.com/18nelli18/Modded-Cycles/pull/121) | `lo-fi-machines` | Ready for review. Its MACRO lo-fi gives way to #128's track lo-fi |
+| **Resonance without the level drop**: full makeup and a soft clip | [#124](https://github.com/18nelli18/Modded-Cycles/pull/124) | `res-makeup` | Draft |
+| **RETROSYN**, the 15th machine: chiptune voices from the AveyCole fork | [#123](https://github.com/18nelli18/Modded-Cycles/pull/123) | `retrosyn-core` | Ready for review |
+| **Delay time and LFO speed in note values of the tempo**: SETTINGS + the knob switches to SYNC | [#126](https://github.com/18nelli18/Modded-Cycles/pull/126) | `tempo-sync` | Ready for review. User's report, 30/10/2026 |
+| **LFO learn under MACHINES**: FINE on every machine; MACHINES no longer opens the machine screen while [LFO] is held; several LFOs on one destination add up | [#127](https://github.com/18nelli18/Modded-Cycles/pull/127) | `lfo-machines-learn` | Ready for review. Needs #105, #113 and #121 |
+| **Track lo-fi and fine tune (FTUNE)** on every machine — MACHINES + COLOR is Lo-Fi Rate (OFF, 46K…4K), MACHINES + SHAPE is Lo-Fi Bits (OFF, 12B…2B), MACHINES + PITCH is FTUNE (−64…+63, 1/32 semitone) — plus Sampler and MACHINES-gesture fixes | [#128](https://github.com/18nelli18/Modded-Cycles/pull/128) | `track-lofi` | Ready for review. User's reports, 30–31/10/2026. Merges last |
+| **ACID articulation** (Slide, Tie, Accent, Decay) in Mod Settings › ACID, and a Devil Fish profile | [#129](https://github.com/18nelli18/Modded-Cycles/pull/129) | `acid-devilfish` | Ready for review. Needs #113; its user's report sits on top of #128's chain, 01/11/2026 |
+
+The web flasher builds the OS 2.0 only. To try one of these, build its branch from the command line
+([BUILD.md](BUILD.md)); no firmware image is distributed here.
+
+### Merge order
+
+The two drafts, #113 and #124, can land as soon as they are reviewed; #113 goes first because #127 and #129 build on
+it. Then `#117 → #118 → #119 → #120 → #121 → #124 → #123 → #126 → #127 → #128`, and `#129` right after `#113`. Each
+later branch is rebased on `main` and its generated files regenerated once the ones before it are in; until then a
+dependent pull request also lists the commits of what it waits for, which is expected. The draft #105 (LFO 2/3/4 on
+release) is already contained in #127.
+
+### What has been checked, and on whose machine
+
+- **Emulator.** Where a change carries code, a proof under `tools/emu/` runs the OS's own code, alone and with the
+  rest of the OS; the rest are byte writes that the build checks. The generated files (`tweaks.js`,
+  `REF_MAINOS`/`REF_MODS`, `REGISTRY.md`) regenerate byte for byte, and `tools/check_overlaps.py` is clean on the
+  combined branch.
+- **A user's Model:Cycles** (*Rapport d'un utilisateur*, not Maxime's test): 30/10/2026, test builds `os-lofi4`…
+  `os-lofi7` — lo-fi on every machine, sounds saved and reloaded, p-locks, the four LFOs, BITS rounding, the machine
+  browser opening on release, the FTUNE window; 31/10/2026, `os-track-lofi1` (the whole #128 chain); 01/11/2026,
+  `os-lofi-df2` (#129 on top of that chain) — flashed and reported working. These were builds of the combined branch,
+  not of the OS 2.0 alone. The reports are quoted in the pull requests.
+- **Maxime's own test.** Not yet for any of these. Until he reports, the OS stays *experimental* and no feature here
+  is marked *tested*.
+
+### Where the details are
+
+- [FEATURES.md](FEATURES.md): the OS 2.0 as it is — every feature, every key combination, every limit and whether it
+  was tested. Each pull request adds its own rows when it lands.
+- `notes/`: the technical notes, in French. They land with their pull request: `notes/81` (FUNC + SETTINGS),
+  `notes/82` (delay and LFO speed in note values), `notes/83` (Sampler filter and Res), `notes/84` (RETROSYN), `notes/85` (resonance makeup),
+  `notes/86` (track lo-fi), `notes/88` (ACID Devil Fish), `notes/56` §3.13–3.14 (LFO learn).
+- Each pull request's description: what the user sees before and after, how it was proved, and what to try on the
+  machine.
+- [The guide](https://18nelli18.github.io/Modded-Cycles/guide/): the released OS step by step. A pull request that
+  changes a page brings its text in the same PR.
 
 ## Install in three steps
 
